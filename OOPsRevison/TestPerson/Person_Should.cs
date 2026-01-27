@@ -32,7 +32,7 @@ namespace TestPerson
             sut.FirstName.Should().Be(expectedFirstName);
             sut.LastName.Should().Be(expectedLastName);
             sut.Address.Should().BeNull();
-            sut.EmploymentPositions.count.Should().Be(0);
+            sut.EmploymentPositions.Count.Should().Be(0);
 
             // Assert.Equal(expectedFirstName, sut.FirstName);
             // Assert.Equal(expectedLastName, sut.LastName);
@@ -59,7 +59,7 @@ namespace TestPerson
 
             //Act - perform the functionality being tested
 
-            Person sut = new Person(expectedFirstName, expectedLastName, expectedAddress);
+            Person sut = new Person(expectedFirstName, expectedLastName, expectedAddress, employmentPositions);
 
             //Assert
 
@@ -69,5 +69,39 @@ namespace TestPerson
             Assert.Equal(expectedEmploymentCount, sut.EmploymentPositions.Count);
 
         }
+
+
+        [Fact]
+
+        public void Retun_The_Full_Name() 
+        {
+            // Arrange - initialize variables and objects needed in the test
+            string expectedFullName = "Kaur, Baljeet";
+            ResidentAddress expectedAddress = new ResidentAddress(222, "oak street", "Edmonton", "AB", "T5T2Y5");
+            Employment one = new Employment("PG-1", SupervisoryLevel.TeamMember, DateTime.Parse("2014/10/04"), 6.4);
+            Employment two = new Employment("PG-2", SupervisoryLevel.TeamLeader, DateTime.Parse("2015/10/04"), 5.4);
+
+            List<Employment> employmentPositions = new List<Employment>();
+            employmentPositions.Add(one);
+            employmentPositions.Add(two);
+            int expectedEmploymentCount = employmentPositions.Count;
+
+
+            // Act - perform the functionality being tested
+
+            Person sut = new Person("Baljeet", "Kaur", expectedAddress, employmentPositions);
+            string fullName = sut.FullName;
+
+           // Assert
+
+            sut.Address.Should().Be(expectedAddress);
+            sut.EmploymentPositions.Count.Should().Be(expectedEmploymentCount);
+            sut.FullName.Should().Be(expectedFullName);
+
+        }
+
+
+
+
     }
 }

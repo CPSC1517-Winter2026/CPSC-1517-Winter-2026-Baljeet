@@ -19,6 +19,14 @@ namespace OOPsReview
 
         public List<Employment> EmploymentPositions { get; set; } = new List<Employment>();
 
+        public string FullName
+        {
+            get
+            {
+                return $"{LastName}, {FirstName}";
+            }
+        }
+
         //default constructor
 
         public Person()
