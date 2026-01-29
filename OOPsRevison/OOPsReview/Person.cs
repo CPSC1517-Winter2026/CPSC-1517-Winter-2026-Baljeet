@@ -48,5 +48,24 @@ namespace OOPsReview
         }
 
 
+        public void ChangeFullName(string firstname, string lastname)
+        {
+            FirstName = firstname;
+            LastName = lastname;
+        }
+
+        public void AddEmployment(Employment employment) {
+
+            if (employment == null)
+                throw new ArgumentNullException($"Employment can't be a null value : {employment}");
+
+            if (EmploymentPositions.Any(ep => ep.Title.Equals(employment.Title)
+                                                        && employment.StartDate == employment.StartDate))
+            {
+                throw new ArgumentException($" duplicate employment position: {employment.Title} and start date as : {employment.StartDate} ");
+            }
+        
+            EmploymentPositions.Add(employment);
+        }
     }
 }
