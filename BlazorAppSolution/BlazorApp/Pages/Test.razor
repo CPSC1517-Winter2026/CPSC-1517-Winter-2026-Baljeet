@@ -1,0 +1,25 @@
+﻿@page "/test"
+
+<h3>Test</h3>
+<h1> Just for testing purpose</h1>
+<label for= "dataitem">
+    <input type="text"  @bind ="inputValue" placeholder="Enter a string" />
+</label>
+
+<button class="btn btn-primary" @onclick="printString"> Print the string Entered</button>
+
+<p role="status">Current String by the user: @feedback</p>
+
+@code {
+    private string inputValue;
+    private string feedback;
+
+    void printString()
+    {
+        // data entered int the input control will be placed in local variable which is mentioned in bind attribute
+
+       string feedback = $"user entered {inputValue}";
+    }
+
+
+}
