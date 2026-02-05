@@ -1,7 +1,21 @@
 ﻿@page "/basicevents"
 <PageTitle>   Basic Button Events  </PageTitle>
+
+<!-- Data Binding : ONE WAY        -->
+<h1> @Title </h1>
 <h3>Blazor Button Events for Practice</h3>
 <button type="submit" class = "btn btn-primary" @onclick = "OnFirstButtonClick" value="dataValue" > </button>
+
+<!-- Data Binding: TWO WAY   -->
+<p>
+    <label>
+        Input Value:  <input @bind="InputValue" />
+    </label>
+</p>
+
+<p>
+    input value is : @InputValue
+</p>
 
 @if (!String.IsNullOrWhiteSpace(feedback))
 {
@@ -18,6 +32,17 @@ else
     // parametes
     private string feedback;
     private Random rnd  = new();
+    private string InputValue { get; set; } = "Initial value";
+
+    //private string _title = " Basic Button Events Example ";
+    // example ONE WAY data binding rendering property
+
+    public string Title { get; set; } = " Basic Button Events Example ";
+   
+    // example TWO WAY data binding rendering property
+
+
+
 
     // OnInitilized life cylcle method
 
