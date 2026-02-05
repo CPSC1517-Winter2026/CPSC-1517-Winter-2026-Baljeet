@@ -8,7 +8,7 @@
 
 <button class="btn btn-primary" @onclick="printString"> Print the string Entered</button>
 
-<p role="status">Current String by the user: @feedback</p>
+<p role="status">Current String by the user: @feedback  and the orginal value was: @inputValue</p>
 
 @code {
     private string inputValue;
@@ -18,7 +18,7 @@
     {
         // data entered int the input control will be placed in local variable which is mentioned in bind attribute
 
-       string feedback = $"user entered {inputValue}";
+       feedback = $"user entered {inputValue}";
     }
 
 

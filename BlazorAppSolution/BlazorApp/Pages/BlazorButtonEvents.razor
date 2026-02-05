@@ -1,0 +1,46 @@
+﻿@page "/basicevents"
+<PageTitle>   Basic Button Events  </PageTitle>
+<h3>Blazor Button Events for Practice</h3>
+<button type="submit" class = "btn btn-primary" @onclick = "OnFirstButtonClick" value="dataValue" > </button>
+
+@if (!String.IsNullOrWhiteSpace(feedback))
+{
+    <p>  @feedback </p>
+}
+else
+{
+    <p>  This page has no feedback </p>
+}
+
+
+
+@code {
+    // parametes
+    private string feedback;
+    private Random rnd  = new();
+
+    // OnInitilized life cylcle method
+
+    protected override void OnInitialized()
+    {
+        feedback = "On Initialized";
+        base.OnInitialized();
+    }
+
+    // method for button click 
+
+    public void OnFirstButtonClick()
+    {
+        int evenOdd = rnd.Next(1,100);
+        if (evenOdd % 2 == 0)
+        {
+            feedback = $" The random number generated is {evenOdd} which is even ";
+        }
+        else
+        {
+            feedback = $" The random number generated is {evenOdd} which is odd ";
+        }
+
+    }
+
+}
