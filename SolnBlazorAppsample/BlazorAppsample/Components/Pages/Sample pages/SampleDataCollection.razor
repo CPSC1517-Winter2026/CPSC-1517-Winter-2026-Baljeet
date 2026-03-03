@@ -1,0 +1,21 @@
+﻿@page "/datacollection"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current Name: @sampleName</p>
+<input type="text" name="name" @bind = "@sampleName" />
+
+<button class="btn btn-primary" @onclick="ChangeName">Click me</button>
+
+@code {
+    private string sampleName = "";
+    private string feedback = "";
+
+    private void ChangeName()
+    {
+        feedback = sampleName;
+    }
+}

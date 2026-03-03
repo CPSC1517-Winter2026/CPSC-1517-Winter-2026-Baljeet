@@ -187,7 +187,24 @@ each row is stack top to bottom
     private DateTime empStartDate;
     private SupervisoryLevel empLevel;
 
+    //injected services into your application
+    //the declaration needs to be coded as a property, typically an auto-implemented property
+    //WARNING: you may get a exception on the declaration (red line), if so place a using
+    //  clause at the top of this file (using Microsoft.JSInterop;)
+    //[Inject]
+    // private IJSRuntime jsRuntime { get; set; }
 
+    //this variable is required if you are using property injection
+    //  for services available from the system which are not normally included
+    //  for use to your application
+    //this service collection will allow us to find the top of your application
+
+    [Inject]
+    public IWebHostEnvironment webHostEnvironment { get; set; }
+
+    //this injection is for being able to go grom page A to page B by code
+    //[Inject]
+    //  public NavigationManager navigationManager { get; set; }
 
     // Add Methods for button clicks
 
@@ -281,11 +298,11 @@ each row is stack top to bottom
                 //      service called IWebHostEnvironment via property injection (see variables)
                 //  ii) use relative addressing starting a the top of your application (see report page)
 
-               // string appPathName = webHostEnvironment.ContentRootPath;
+                string appPathName = webHostEnvironment.ContentRootPath;
 
                 //WARNING: the folder slash for your path can be both a forward or back slash
                 //              on a PC BUT for an Apple machine, you must use the forward slash (/)
-               // string csvFilePathName = $@"{appPathName}/Data/Employment.csv";
+                string csvFilePathName = $@"{appPathName}/Data/Employment.csv";
 
                 //WARNING: when you use the System.IO.File you MUST use the
                 //          fully qualified naming to the class method you wish
@@ -297,7 +314,7 @@ each row is stack top to bottom
                 //write the data from the employment instance (ToString) as a line to the csv file
                 //since the string does not contain a line feed character, we will need to concatenate
                 //  the character (\n)
-              //  string line = $"{employment.ToString()}\n";
+                string line = $"{employment.ToString()}\n";
 
                 //the System.IO.File method will be AppendAllText(filepathname,string)
                 // AppendAllText will
@@ -305,7 +322,9 @@ each row is stack top to bottom
                 //   b) opens
                 //   c) writes the text
                 //   d) closes
-               // System.IO.File.AppendAllText(csvFilePathName, line);
+                //System.IO.File.AppendAllText(csvFilePathName, line);
+
+                System.IO.File.AppendAllText(csvFilePathName, line);
 
                 //give the user a feed back message that indicates the success or failure
                 //  of the event
