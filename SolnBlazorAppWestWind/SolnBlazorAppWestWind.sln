@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36908.2 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorAppWestWind", "BlazorAppWestWind\BlazorAppWestWind.csproj", "{6C6479E0-B05F-41B3-B658-EF0AA9C96328}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassWestWind", "ClassWestWind\ClassWestWind.csproj", "{E52ABF61-D6D4-479C-B626-39DDAA8EF4E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C6479E0-B05F-41B3-B658-EF0AA9C96328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C6479E0-B05F-41B3-B658-EF0AA9C96328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C6479E0-B05F-41B3-B658-EF0AA9C96328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C6479E0-B05F-41B3-B658-EF0AA9C96328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E52ABF61-D6D4-479C-B626-39DDAA8EF4E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E52ABF61-D6D4-479C-B626-39DDAA8EF4E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E52ABF61-D6D4-479C-B626-39DDAA8EF4E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E52ABF61-D6D4-479C-B626-39DDAA8EF4E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FD424C10-6E46-4C53-860E-E87A3D905B7C}
+	EndGlobalSection
+EndGlobal
