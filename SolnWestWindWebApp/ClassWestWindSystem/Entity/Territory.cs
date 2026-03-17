@@ -8,7 +8,7 @@ namespace ClassWestWindSystem.Entity;
 
 public partial class Territory
 {
-    [Key]
+    [Key,DatabaseGenerated(DatabaseGeneratedOption.None) ]
     [Column("TerritoryID")]
     [StringLength(20)]
     public string TerritoryId { get; set; } = null!;

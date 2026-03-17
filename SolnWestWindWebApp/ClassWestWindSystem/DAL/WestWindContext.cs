@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using ClassWestWindSystem.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace ClassWestWindSystem.Entity;
+namespace ClassWestWindSystem.DAL;
 
 public partial class WestWindContext : DbContext
 {
