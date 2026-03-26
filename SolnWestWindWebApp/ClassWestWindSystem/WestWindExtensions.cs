@@ -40,8 +40,17 @@ namespace ClassWestWindSystem
                 // create an instance of the service and return it to the caller or supply context reference to service class
                 return new BuildVersionServices(context);
 
-            }
-            );
+            });
+            // we add code to register a BLL service over here, so that it can be accessed by outside world
+            // each service will be added with the AddTransient method, which means that a new instance of the service will be created each time it is requested.
+            services.AddTransient<RegionServices>((ServiceProvider) =>
+            {
+                // get the conext of class that was registered above 
+                var context = ServiceProvider.GetService<WestWindContext>();
+                // create an instance of the service and return it to the caller or supply context reference to service class
+                return new RegionServices(context);
+
+            });
 
 
         }
