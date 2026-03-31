@@ -1,8 +1,181 @@
 ﻿@page "/region"
-<h3>Regions</h3>
+@rendermode InteractiveServer
 
-<p>This is sample Region Page, where we will consume Region service to fetch descriotion of region based on given ID </p>
+<!-- #region name -->
+@using ClassWestWindSystem.BLL
+@using ClassWestWindSystem.Entity
+<!-- #endregion -->
+
+<h3>Regions</h3>
+<PageTitle> Region Query Page</PageTitle>
+<h3>RegionQuery</h3>
+
+<div class="row">
+    <div class="offset-1 col-md-10">
+        <blockquote style="background-color:gainsboro;">
+            <p>
+                This component will display details of Region by providing ID of region or 
+                user can fetch region details by selecting a region from a given list
+            </p>
+        </blockquote>
+    </div>
+</div>
+
+@if (errorMsgs.Count() > 0)
+{
+    <div class=" alert alert-danger">
+        <p> Please fix the following errors</p>
+        <ul>
+            @foreach (var message in errorMsgs.Values)
+            {
+                <li> @message</li>
+            }
+        </ul>
+    </div>
+}
+
+@if (feedBackMsg.Length > 0)
+{
+    <div class=" alert alert-info">
+        <p> Status of Region Service : @feedBackMsg</p>
+    </div>
+}
+
+
+<!--Add input controls to fetch details of Region-->
+<!--
+form area
+standard html controls
+use bootstrap for formating
+each control will be on a separate row
+each row is stack top to bottom
+-->
+
+
+<div class=" row">
+    <div class="col-md-6">
+<fieldset>
+    <legend>Region Services</legend>
+    <!--
+    the structure of a row will contain 2 columns
+    1) will contain the label for the data entry
+    2) will contain the input control for the data entry
+    -->
+    
+            <label for="regionID">Region ID</label>
+        
+            <input type="number" id="regionID" @bind="regionIDarg" placeholder="enter region ID" />
+        
+            <button type="submit" class="btn btn-outline-primary rounded-pill"
+                    @onclick="GetByID" style="width:170px;">
+                Fetch by region ID
+            </button>
+        
+       
+    <br />
+   
+   
+    
+            <label for="levelS">List of Regions</label>
+       
+            
+            <!-- we wish to select from a set of defined choices
+            this will limit the user to ONLY acceptable values
+
+            another way to bind your controls is directly into
+            an instance of a class
+            using the instance requires your property set to be public
+
+            <select id="levelS" @bind="employment.Level">
+            -->
+            <select id="selecid" @bind="selectarg">
+                <!--
+                there is a line for each item in the Enum
+                you could hard-code each option tag
+
+                the option tag has 2 components:
+                value: this is the value that will be returned to the control variable
+                text: this is text that will be display whent the selection list is show
+                syntax   <option value="somevalue">display Text</option>
+
+                <option value="Entry">Entry</option>
+                <option value="TeamMember">TeamMember</option>
+                <option value="TeamLeader">TeamLeader</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="DepartmentHead">DepartmentHead</option>
+                <option value="Owner">Owner</option>
+
+                -->
+                <!--
+                you can also access the Enum definition and
+                extract each enum value (treating the Enum as a collection)
+                -->
+                @foreach (var item in regionList)
+                {
+                    //each Enum will consider the value as a string
+                    //the value attribute is the value returned when a choice has been made
+                    //the string between the opening and closing tag will be displayed to the user
+                    <option value="@item">@item</option>
+                }
+            </select>
+            <button type="submit" class="btn btn-outline-primary rounded-pill"
+                    @onclick="GetBySelection" style="width:170px;">
+                Fetch by selection
+            </button>
+          
+
+
+</fieldset>
+</div>
+
+<div class="col-md-6">
+        <h3> Display Results over here</h3>
+    
+    <div>
+        @if(info != null)
+        {
+        <p> Region ID : @info.RegionId</p>
+        <p> Region ID : @info.RegionDescription</p>
+        }
+    </div>
+
+</div>
+</div>
+
 
 @code {
+    private string feedBackMsg = "";
+    Dictionary<string, string> errorMsgs = new();
+    private int regionIDarg;
+    private int selectarg;
+    private List<Region> regionList = new();
+    Region info = null;
 
+    // inject the region service here to consume it
+
+    [Inject]
+    private RegionServices _regionServices { get; set; }
+
+
+
+
+
+
+
+
+
+    /// <summary>
+    ///  define methods
+    /// </summary>
+    /// 
+
+
+    private void GetByID()
+    {
+        info = _regionServices.Region_GetByID(regionIDarg);
+
+    }
+
+    private void GetBySelection()
+    {}
 }
