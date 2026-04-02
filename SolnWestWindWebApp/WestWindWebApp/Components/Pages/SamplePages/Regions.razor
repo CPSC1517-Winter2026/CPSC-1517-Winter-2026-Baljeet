@@ -115,7 +115,7 @@ each row is stack top to bottom
                     //each Enum will consider the value as a string
                     //the value attribute is the value returned when a choice has been made
                     //the string between the opening and closing tag will be displayed to the user
-                    <option value="@item">@item</option>
+                    <option value="@item.RegionId">@item.RegionDescription</option>
                 }
             </select>
             <button type="submit" class="btn btn-outline-primary rounded-pill"
@@ -156,6 +156,15 @@ each row is stack top to bottom
     [Inject]
     private RegionServices _regionServices { get; set; }
 
+    protected override void OnInitialized()
+    {
+        //need this method as the select collection needs to exist as the page
+        //  first appears
+        //consume a Region service
+        base.OnInitialized();
+        regionList = _regionServices.Region_GetList();
+    }
+
 
 
 
@@ -172,10 +181,56 @@ each row is stack top to bottom
 
     private void GetByID()
     {
-        info = _regionServices.Region_GetByID(regionIDarg);
+        feedBackMsg = "";
+        errorMsgs.Clear();
+
+        if ( regionIDarg <= 0)
+        {
+            errorMsgs.Add("Wrong ID", $"You must select a region ID greater than Zero");
+
+        }
+        //did you find any invalid data
+        if (errorMsgs.Count == 0)
+        {
+            //at this point data appears to be good
+            //consume a service and catch results
+            info = _regionServices.Region_GetByID(regionIDarg);
+
+            if (info == null)
+            {
+                //since the select control is based on the database records
+                //  it is highly unlikely you will ever get this message
+                feedBackMsg = $" There is no detail available for the selected region ID";
+            }
+        }
 
     }
 
     private void GetBySelection()
-    {}
+    {
+        feedBackMsg = "";
+        errorMsgs.Clear();
+        info = null;
+        //validate the incoming argument value is correct
+
+        if (selectarg==0)
+        {
+            errorMsgs.Add("no selection",$"You must select a regionm to query");
+
+        }
+        //did you find any invalid data
+        if (errorMsgs.Count == 0)
+        {
+            //at this point data appears to be good
+            //consume a service and catch results
+            info = _regionServices.Region_GetByID(selectarg);
+
+            if (info == null)
+            {
+                //since the select control is based on the database records
+                //  it is highly unlikely you will ever get this message
+                feedBackMsg = $" There is no detail available for the selected region ID";
+            }
+        }
+    }
 }
