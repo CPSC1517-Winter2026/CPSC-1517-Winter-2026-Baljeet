@@ -61,6 +61,14 @@ namespace ClassWestWindSystem
 
             });
 
+            services.AddTransient<ShipperServices>((ServiceProvider) =>
+            {
+                // get the conext of class that was registered above 
+                var context = ServiceProvider.GetService<WestWindContext>();
+                // create an instance of the service and return it to the caller or supply context reference to service class
+                return new ShipperServices(context);
+
+            });
 
         }
     }

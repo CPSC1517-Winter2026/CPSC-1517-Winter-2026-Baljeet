@@ -79,7 +79,8 @@ This page shoud consume ShipmentServices to get details on specific Year and Mon
                         <th> ID</th>
                         <td> Order </td>
                         <td> Date </td>
-                        <td> Shipper </td>
+                        <td> Shipper ID </td>
+                        <td> ShipperName </td>
                         <td> Freight $ </td>
                     </tr>
                 </thead>
@@ -91,6 +92,7 @@ This page shoud consume ShipmentServices to get details on specific Year and Mon
                         <td> @item.OrderId</td>
                         <td> @item.ShippedDate.ToString("yyyy dd, mm")</td>
                         <td> @item.ShipVia</td>
+                        <td> @item.ShipViaNavigation.CompanyName</td>
                         <td> @item.FreightCharge</td>
                     </tr>
                 }
@@ -117,13 +119,15 @@ This page shoud consume ShipmentServices to get details on specific Year and Mon
     private int montharg ;
 
     private List<Shipment> shipmentList = null  ;
+    private List<Shipper> shipperList = null;
     // consume service here by Inject
 
     [Inject]
     private ShipmentServices _shipmentServices{ get; set; }
 
 
-
+    [Inject]
+    private ShipperServices _shipperServices {get; set;}
 
 
 
@@ -131,7 +135,7 @@ This page shoud consume ShipmentServices to get details on specific Year and Mon
 
     protected override void OnInitialized()
     {
-
+        shipperList = _shipperServices.Shipper_ShipperShipmentList();
         yeararg = DateTime.Today.Year;
         montharg = DateTime.Today.Month;
         base.OnInitialized();
