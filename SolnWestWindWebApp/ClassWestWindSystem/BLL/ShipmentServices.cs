@@ -50,7 +50,7 @@ namespace ClassWestWindSystem.BLL
                                                         && s.ShippedDate.Month == montharg)
                                                  .OrderBy(s => s.ShippedDate);
             return info.ToList();
-            
+
 
             // lookup the specific region record for supplied region ID
         }

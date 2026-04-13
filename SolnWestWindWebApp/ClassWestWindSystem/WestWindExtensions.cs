@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using ClassWestWindSystem.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using ClassWestWindSystem.BLL; // we need to add services to BLL to use here
+using ClassWestWindSystem.BLL;
+// we need to add services to BLL to use here
 #endregion Additional Namespaces
 
 
@@ -52,14 +53,14 @@ namespace ClassWestWindSystem
 
             });
 
-            services.AddTransient<ShipmentServices>((ServiceProvider) =>
-            {
-                // get the conext of class that was registered above 
-                var context = ServiceProvider.GetService<WestWindContext>();
-                // create an instance of the service and return it to the caller or supply context reference to service class
-                return new ShipmentServices(context);
+            //services.AddTransient<ShipmentServices>((ServiceProvider) =>
+            //{
+            //    // get the conext of class that was registered above 
+            //    var context = ServiceProvider.GetService<WestWindContext>();
+            //    // create an instance of the service and return it to the caller or supply context reference to service class
+            //    return new ShipmentServices(context);
 
-            });
+            //});
 
             services.AddTransient<ShipperServices>((ServiceProvider) =>
             {
@@ -67,6 +68,15 @@ namespace ClassWestWindSystem
                 var context = ServiceProvider.GetService<WestWindContext>();
                 // create an instance of the service and return it to the caller or supply context reference to service class
                 return new ShipperServices(context);
+
+            });
+
+            services.AddTransient<ShipmentServices>((ServiceProvider) =>
+            {
+                // get the conext of class that was registered above 
+                var context = ServiceProvider.GetService<WestWindContext>();
+                // create an instance of the service and return it to the caller or supply context reference to service class
+                return new ShipmentServices(context);
 
             });
 
