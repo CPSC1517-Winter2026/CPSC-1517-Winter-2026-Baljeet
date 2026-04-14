@@ -80,6 +80,32 @@ namespace ClassWestWindSystem
 
             });
 
+            services.AddTransient<SupplierServices>((ServiceProvider) =>
+            {
+                // get the conext of class that was registered above 
+                var context = ServiceProvider.GetService<WestWindContext>();
+                // create an instance of the service and return it to the caller or supply context reference to service class
+                return new SupplierServices(context);
+
+            });
+
+            services.AddTransient<CategoryServices>((ServiceProvider) =>
+            {
+                // get the conext of class that was registered above 
+                var context = ServiceProvider.GetService<WestWindContext>();
+                // create an instance of the service and return it to the caller or supply context reference to service class
+                return new CategoryServices(context);
+
+            });
+
+            services.AddTransient<ProductServices>((ServiceProvider) =>
+            {
+                // get the conext of class that was registered above 
+                var context = ServiceProvider.GetService<WestWindContext>();
+                // create an instance of the service and return it to the caller or supply context reference to service class
+                return new ProductServices(context);
+            });
+
         }
     }
 }
