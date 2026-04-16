@@ -25,7 +25,7 @@ namespace ClassWestWindSystem.BLL
         }
         // add your required services a.k.a queries over here
         // want to fetch supplier list by company name
-        public List<Supplier> Supplier_GetAll()
+        public List<Supplier> Supplier_GetList()
         {
             IEnumerable<Supplier> info = _context.Suppliers;
             return info.OrderBy(x => x.CompanyName).ToList();

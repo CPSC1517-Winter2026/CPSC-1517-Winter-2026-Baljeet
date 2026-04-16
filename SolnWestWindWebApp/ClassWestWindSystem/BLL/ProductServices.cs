@@ -1,5 +1,6 @@
 ﻿using ClassWestWindSystem.DAL;
 using ClassWestWindSystem.Entity;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,41 +11,416 @@ namespace ClassWestWindSystem.BLL
 {
     public class ProductServices
     {
-        // setup the context connection variable and class constructure
-        // this connection will be used by all methods in this class to access the database
-
+        #region setup the context connection variable and class constructor
         private readonly WestWindContext _context;
 
-        // constructor to be used in the creation of the instance of this class 
-        // the registered reference for the context connection will be passes from the service IserviceCollection registered service
-
-
-        internal ProductServices(WestWindContext registered_context)
+        //constructor to be used in the creation of the instance of this class
+        //the registered reference for the context connection (database connection)
+        //  will be passed from the IServiceCollection registered services
+        internal ProductServices(WestWindContext registeredcontext)
         {
-            _context = registered_context;
+            _context = registeredcontext;
         }
-        // add your required services a.k.a queries over here
-        //get products by categoryid
+        #endregion
 
-        public List<Product> Product_GetByCategory( int categoryid)
+        #region Queries
+
+        public List<Product> Product_GetByCategoryID(int categoryid)
         {
-            IEnumerable<Product> info = _context.Products.Where(
-                                        p => p.CategoryId == categoryid)
-                                        .OrderBy(p=> p.ProductName) ;
-            return info.ToList();
-        }
+            //IEnumerable<Product> info = _context.Products
+            //                                    .Where(x => x.CategoryID == categoryid)
+            //                                    .OrderBy(x => x.ProductName);
+            //return info.ToList();
 
-
-
-        // get product details by productid
-
-        public Product Product_GetByProductID( int productid)
-        {
-            Product info = _context.Products.Where(
-                                    p => p.ProductId == productid).FirstOrDefault();
+            //alternate
+            List<Product> info = _context.Products
+                                               .Where(x => x.CategoryId == categoryid)
+                                               .OrderBy(x => x.ProductName)
+                                               .ToList();
             return info;
+
         }
 
+        //if you wish to use the Include technique to obtain the Supplier company name
+        //public List<Product> Product_GetByCategoryID(int categoryid)
+        //{
 
+        //    List<Product> info = _context.Products
+        //                                        .Include(x => x.Supplier)
+        //                                       .Where(x => x.CategoryID == categoryid)
+        //                                       .OrderBy(x => x.ProductName)
+        //                                       .ToList();
+        //    return info;
+        //}
+
+        //obtain the record from the database using the appropriate table and it's primary key
+        public Product Product_GetByID(int productid)
+        {
+            return _context.Products
+                           .Where(x => x.ProductId == productid)
+                           .FirstOrDefault();
+
+            //.Find checks for primary keys
+            //return _context.Products.Find(productid);
+        }
+        #endregion
+
+        #region CRUD for Add, Update and Delete services
+
+        public int Product_Add(Product item)
+        {
+            //Adding a record to your database may require addition validation that was not
+            //  done on the front end
+            //Such validation could be
+            //  was data actually passed to the method
+            //  the pkey may not be created on the database, it is user supplied
+            //      the pkey key supplied should be tested to see if it already exists on the database
+            //  there could be a set of business rules that evolve checking data against
+            //      existing data on the database that is not part of the record being added
+
+            //do any validation needed within the service method
+
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Add not done.");
+            }
+
+            //does the pkey exist?
+            //product has a pkey of IDENTITY
+            //there is no need to check to see if the pkey already exists since the
+            //      primary key will be generated by the database
+            //HOWEVER, if your pkey is NOT an identity, you could check to see if
+            //  the value for the pkey is already in use, if so, throw an exception
+
+
+
+            //are there any other business rules to check
+            //YOU MAY NOT HAVE ANY OTHER BUSINESS RULES TO CHECK!!!!!!!!!!!!!!!!!!!
+            //An example of business rules (product duplication) for this demo could be that the product
+            //  a) is from the same supplier
+            //  b) with the same product name
+            //  c) having the same quantity per unit
+
+            bool exists = false; //flag
+
+            //the method does NOT need the actual record, JUST needs to know if the condition exists: .Any(...)
+            exists = _context.Products
+                            .Any(x => x.SupplierId == item.SupplierId
+                                   && x.ProductName.Equals(item.ProductName)
+                                   && x.QuantityPerUnit.Equals(item.QuantityPerUnit));
+
+            //check the results of your complex business rule
+            if (exists)
+                throw new ArgumentException($"Product {item.ProductName} from " +
+                    $" {item.Supplier.CompanyName} of size {item.QuantityPerUnit} " +
+                    $" already on file.");
+
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //if your field is an IDENTITY key then override any value in the field 
+            //set the pkey value to zero
+            //prevents an IDENTITY_INSERT flag problem from occuring
+            item.ProductId = 0;
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+
+            //Staging
+            //EntityFramework sets up all db processing in local memory first
+            //what is needed for staging
+            // a) know the DbSet : Products
+            // b) know the action : Add
+            // c) know the instance of the DbSet to use: item
+
+            //IMPORTANT: the data is in LOCAL MEMORY
+            //           the data is NOT!!! yet been sent to the database
+            //THEREFORE: at this time, there is NO!!!!! IDENTITY primary key value
+            //              on this instance (except for the default of the datatype)
+            //UNLESS: you have place a value in the NON_IDENTITY key field(s)
+
+            _context.Products.Add(item);
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //ANY annotation validation is in your entity, it is executed to validate the data
+            //  going to the database
+            //if there is a validation problem then an exception is thrown and processing of
+            //  the commit is terminated (transaction RollBack)
+
+            _context.SaveChanges();
+
+            //AFTER the successful commit to the database, your new product id
+            //  primary key is available to you via the item.ProductID
+            //Optionally, you could return this value to the calling process
+
+            return item.ProductId;
+        }
+
+        public int Product_Update(Product item)
+        {
+            //do any validation needed within the service method
+
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Update not done.");
+            }
+
+            //does the pkey exist?
+            //if the pkey does not exist then no update will happen
+            //check to see if an update to the expected record can be done
+            //   by looking for the pkey
+            if (!_context.Products.Any(x => x.ProductId == item.ProductId))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                    $" of size {item.QuantityPerUnit} " +
+                    $" is not on file. Check for the product again");
+
+
+            //are there any other business rules to check
+            //YOU MAY NOT HAVE ANY OTHER BUSINESS RULES TO CHECK!!!!!!!!!!!!!!!!!!!
+            //An example of business rules (product duplication) for this demo could be that the product
+            //  a) is from the same supplier
+            //  b) with the same product name
+            //  c) having the same quantity per unit
+            //  d) AND is NOT the current product (all other products)!!!!!
+
+            bool exists = false; //flag
+
+            //the method does NOT need the actual record, JUST needs to know if the condition exists: .Any(...)
+            exists = _context.Products
+                            .Any(x => x.SupplierId == item.SupplierId
+                                   && x.ProductName.Equals(item.ProductName)
+                                   && x.QuantityPerUnit.Equals(item.QuantityPerUnit)
+                                   && x.ProductId != item.ProductId);
+
+            //check the results of your complex business rule
+            if (exists)
+                throw new ArgumentException($"Product {item.ProductName} from " +
+                    $" {item.Supplier.CompanyName} of size {item.QuantityPerUnit} " +
+                    $" already on file.");
+
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+
+            EntityEntry<Product> updating = _context.Entry(item);
+            updating.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //for the update, SaveChanges will return the "number of rows affected" on the database
+            //return this value to the web page so an appropriate feedback message can be issued
+            return _context.SaveChanges();
+
+        }
+
+        //Delete: cruD
+        //there are two types of deletes: physical and logical
+        //Whether you have a physical or logical delete is determind WHEN
+        //  the system is designed (database, data requirements)
+
+        //Logical delete
+        //this happens when the records is deemed "unwanted" BUT CANNOT be 
+        //  physically removed from the database because the record has
+        //  a relationship to another record(s) (parent/child) and the associated record
+        //  CANNOT be removed
+
+        //Example: The product record is a parent to ManitfestItems records
+        //         The the manitest record is need for tracking, it does to the receiver of the product
+        //so, because the other record(s) are required for the busines
+        //      one CANNOT physically remove the ("parent") product record.
+
+        //usually in this situation, the parent record (product) will have some type of field
+        //  that will indicate "deleted"
+        //on the product record such a field is the Discontinued field
+
+        //Question: If the record will not be deleted, what happens?
+        //Answer: here, you will actually do an update
+        //Within the method, it is a good practice NOT to rely on the user to set
+        //  the "logical delete" field to the delete status
+        //Your method should set the value
+
+        public int Product_LogicalDelete(Product item)
+        {
+            //do any validation needed within the service method
+
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Discontinued not done.");
+            }
+
+            //does the product still exist on the database
+            //the product could have been physically deleted while
+            //  the user was doing some processing with the record in question
+
+            //even though this is an update, one technique is to use the existing
+            //  data already on the database
+            //the only value that needs to be altered is the Discontinue flag
+            //if other data was to be altered, then the user should first do the update
+            //  then do the discontinue
+
+            //remember, FirstOrDefault will either
+            //  a) return the requested record if found
+            //  b) return a null
+            Product exists = null;
+
+            //retreive the current product record from the database
+            exists = _context.Products
+                            .FirstOrDefault(x => x.ProductId == item.ProductId);
+
+            //test if the record exists
+            if (exists == null)
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                    $" of size {item.QuantityPerUnit} " +
+                    $" is not on file. Check for the product again");
+
+            //for the logical delete
+            //  set the appropriate field to the value indicating "delete"
+            //this code is not relying on the user to have set the appropriate
+            //  field on the form
+            //  note: no OTHER field on the current record is altered
+            exists.Discontinued = true;
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+
+            EntityEntry<Product> updating = _context.Entry(exists); // NOTE: use the existing record instance
+            updating.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //for the update, SaveChanges will return the "number of rows affected" on the database
+            //return this value to the web page so an appropriate feedback message can be issued
+            return _context.SaveChanges();
+        }
+
+        //Physical Delete
+        //you physically remove the record from the database
+        //IF there are no "child" records to prevent the record removal, you can remove the record
+        //IF there are "children" AND the "children" are not required, you can remove the record
+        //      HOWEVER, you will need to first remove any "children" before removing the parent record
+        //      assuming there is no cascade delete setup on the database
+
+        public int Product_PhysicalDelete(Product item)
+        {
+            //do any validation needed within the service method
+
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Removal not done.");
+            }
+
+            //does the pkey exist?
+            //if the pkey does not exist then no delete will happen
+            //check to see if a delete to the expected record can be done
+            //   by looking for the pkey
+            if (!_context.Products.Any(x => x.ProductId == item.ProductId))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                   $"  of size {item.QuantityPerUnit} is not on file. Check for the product again.");
+
+            //this delete assumes that there is no appropriate field on the 
+            //  record to indicate a logical "delete" and thus: a physical
+            //  delete will occur
+
+            //HOWEVER!! this record could be a parent to one or more "child" records
+            //One should ensure that there is no existing child record for the
+            //  parent BEFORE attempting the delete
+
+            //using the virual navigational properties, one could check to see
+            //  if any child records (collection) exists for the parent
+            //if there is a cascade delete setup on your dataset and is allowed
+            //  then these checks are unnecessary
+
+            if (!_context.Products.Any(x => x.ManifestItems.Count > 0))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                   $"  of size {item.QuantityPerUnit} has manifest associated records. Cannot remove product.");
+
+            if (!_context.Products.Any(x => x.OrderDetails.Count > 0))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                   $"  of size {item.QuantityPerUnit} has order detail associated records. Cannot remove product.");
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+
+            EntityEntry<Product> deleting = _context.Entry(item);
+            deleting.State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //for the update, SaveChanges will return the "number of rows affected" on the database
+            //return this value to the web page so an appropriate feedback message can be issued
+            return _context.SaveChanges();
+        }
+
+        public int Product_Activate(Product item)
+        {
+            //do any validation needed within the service method
+
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Activate not done.");
+            }
+
+
+            Product exists = null;
+
+            //retreive the current product record from the database
+            exists = _context.Products
+                            .FirstOrDefault(x => x.ProductId == item.ProductId);
+
+            //test if the record exists
+            if (exists == null)
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                    $" of size {item.QuantityPerUnit} " +
+                    $" is not on file. Check for the product again");
+
+            //for the activation of the logical delete
+            //  set the appropriate field to the value indicating "active"
+            //this code is not relying on the user to have set the appropriate
+            //  field on the form
+            //  note: no OTHER field on the current record is altered
+            exists.Discontinued = false;
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+
+            EntityEntry<Product> updating = _context.Entry(exists); // NOTE: use the existing record instance
+            updating.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //for the update, SaveChanges will return the "number of rows affected" on the database
+            //return this value to the web page so an appropriate feedback message can be issued
+            return _context.SaveChanges();
+        }
+        #endregion
     }
 }

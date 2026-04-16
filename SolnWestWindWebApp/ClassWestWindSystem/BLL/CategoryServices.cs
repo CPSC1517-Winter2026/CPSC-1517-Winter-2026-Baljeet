@@ -25,14 +25,17 @@ namespace ClassWestWindSystem.BLL
         }
         // add your required services a.k.a queries over here
 
-        public List<Category> Category_GetAll()
+        public List<Category> Categories_Get()
         {
+            //get the data from the Regions sql table
             IEnumerable<Category> info = _context.Categories;
-            return info.OrderBy(x=> x.CategoryName).ToList();
-        }
 
+            return info.OrderBy(c => c.CategoryName).ToList();
+        }
 
 
 
     }
 }
+
+
