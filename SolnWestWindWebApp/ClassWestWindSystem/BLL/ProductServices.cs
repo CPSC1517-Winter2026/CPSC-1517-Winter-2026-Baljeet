@@ -141,6 +141,7 @@ namespace ClassWestWindSystem.BLL
             //THEREFORE: at this time, there is NO!!!!! IDENTITY primary key value
             //              on this instance (except for the default of the datatype)
             //UNLESS: you have place a value in the NON_IDENTITY key field(s)
+           
 
             _context.Products.Add(item);
 
